@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { db } from '../firebase'; // Import Firestore instance
 import { collection, addDoc } from 'firebase/firestore'; // For saving data
+import { useNavigate } from 'react-router-dom'; // Import useNavigate for redirection
 import './SubscriptionModal.css';
 
 const SubscriptionModal = ({ course, user, onClose }) => {
@@ -10,6 +11,8 @@ const SubscriptionModal = ({ course, user, onClose }) => {
     cvv: '',
     expiry_date: ''
   });
+
+  const navigate = useNavigate(); // Initialize useNavigate
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -65,6 +68,15 @@ const SubscriptionModal = ({ course, user, onClose }) => {
     }
 
     try {
+      // Check if user is logged in
+      if (!user || !user.userid) {
+        console.error("User is not logged in.");
+        
+        // Redirect to login with a message
+        navigate('/login', { state: { message: "You need to log in before making a subscription." } });
+        return;
+      }
+
       // Check if course.id exists
       console.log("Course object:", course);
       if (!course.id) {

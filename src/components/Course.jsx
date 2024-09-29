@@ -29,10 +29,10 @@ const Courses = () => {
   const [courses, setCourses] = useState([]);
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
-  const [selectedCreditCard, setSelectedCreditCard] = useState(null);
   const [isSubscriptionModalOpen, setSubscriptionModalOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false); // Track if user is logged in
-  const navigate = useNavigate(); // Use this for redirection
+  const [message, setMessage] = useState(''); // State to hold the message
+  const navigate = useNavigate(); // Use this for redirection if needed
 
   // Fetch courses from Firestore
   useEffect(() => {
@@ -52,40 +52,21 @@ const Courses = () => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
         setIsLoggedIn(true); // User is logged in
+        setSelectedUser(user); // Set the logged-in user
       } else {
         setIsLoggedIn(false); // User is not logged in
       }
     });
   }, []);
 
-  // Fetch user and credit card info (for demo purposes)
-  useEffect(() => {
-    const fetchUserAndCreditCard = async () => {
-      const usersCollection = collection(db, 'users');
-      const creditCardCollection = collection(db, 'credit_card');
-      
-      const userSnapshot = await getDocs(usersCollection);
-      const creditCardSnapshot = await getDocs(creditCardCollection);
-      
-      const userList = userSnapshot.docs.map(doc => doc.data());
-      const creditCardList = creditCardSnapshot.docs.map(doc => doc.data());
-      
-      setSelectedUser(userList[0]); // Assume the first user
-      setSelectedCreditCard(creditCardList[0]); // Assume the first credit card
-    };
-
-    // Only fetch user/credit card data when the modal is about to open
-    if (isSubscriptionModalOpen) {
-      fetchUserAndCreditCard();
-    }
-  }, [isSubscriptionModalOpen]);
-
   const handleSubscriptionClick = (course) => {
     if (isLoggedIn) {
       setSelectedCourse(course); // Set the selected course
       setSubscriptionModalOpen(true); // Open the modal
+      setMessage(''); // Clear any message if logged in
     } else {
-      navigate('/login'); // Redirect to the login page if not logged in
+      // Set the message to prompt the user to log in
+      setMessage('Please log in to subscribe to a course.');
     }
   };
 
@@ -120,16 +101,18 @@ const Courses = () => {
         </div>
       </section>
 
+      {/* Show the message if the user is not logged in */}
+      {message && <p style={{ color: 'red', textAlign: 'center', marginTop: '20px' }}>{message}</p>}
+
       {/* Conditionally render only one modal at a time */}
       {selectedCourse && !isSubscriptionModalOpen && (
         <CourseDetails course={selectedCourse} onClose={() => setSelectedCourse(null)} />
       )}
 
-      {isSubscriptionModalOpen && selectedUser && selectedCreditCard && (
+      {isSubscriptionModalOpen && selectedUser && (
         <SubscriptionModal 
           course={selectedCourse} 
           user={selectedUser} 
-          creditCard={selectedCreditCard} 
           onClose={handleCloseSubscriptionModal} 
         />
       )}

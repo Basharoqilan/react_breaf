@@ -36,6 +36,7 @@ const Logout = ({ children }) => {
     sx={{
       backgroundColor: "#F68928", // Orange button
       color: "#fff",
+      width : "50%",
       "&:hover": {
         backgroundColor: "#E0761E",
       },
@@ -53,16 +54,17 @@ const Logout = ({ children }) => {
   color="primary"
   onClick={logout} // Log out the user
   sx={{
+    backgroundColor: "#F68928", // Orange button
     color: "#fff",
-    borderColor: "#fff",
-    ml: 1,
-    fontWeight: "bold",
-    padding: "5px 20px",
-    height: "48px", // Ensures height matches with Join button
+    width : "50%",
     "&:hover": {
-      borderColor: "#fff", // Keeps border color the same
-      color: "#fff", // Keeps text color white on hover
+      backgroundColor: "#E0761E",
     },
+    ml: 2,
+    fontWeight: "bold",
+    borderRadius: "8px",
+    padding: "5px 20px",
+    height: "48px", // Ensures height matches with Log In button
   }}
 >
   Log Out

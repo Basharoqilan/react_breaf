@@ -11,6 +11,7 @@ import {
 import MenuIcon from "@mui/icons-material/Menu";
 import { Link } from "react-router-dom";
 import Logout from "../components/auth/Logout"
+import logo from "./logo.png"
 const Header = () => {
   // Check login state from localStorage when the component mounts
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -84,7 +85,7 @@ const Header = () => {
             }}
           >
             <img
-              src="/assets/img/logo/logo.png"
+              src={logo}
               alt="Logo"
               style={{ height: 40, marginRight: "10px" }}
             />
@@ -103,7 +104,7 @@ const Header = () => {
             </Button>
             <Button
               component={Link}
-              to="/courses"
+              to="/UserCourses"
               color="inherit"
               sx={navButtonStyle}
             >
@@ -116,7 +117,7 @@ const Header = () => {
                 variant="contained"
                 color="primary"
                 component={Link}
-                to="/join"
+                to="/register"
                 sx={{
                   backgroundColor: "#F68928", // Orange button
                   color: "#fff",
@@ -130,7 +131,7 @@ const Header = () => {
                   height: "48px", // Ensures height matches with Log In button
                 }}
               >
-                Join
+                register
               </Button>
             
 
@@ -144,16 +145,16 @@ const Header = () => {
                 to="/login"
                 onClick={handleLogin} // Simulate login on click
                 sx={{
+                  backgroundColor: "#F68928", // Orange button
                   color: "#fff",
-                  borderColor: "#fff",
-                  ml: 1,
-                  fontWeight: "bold",
-                  padding: "5px 20px",
-                  height: "48px", // Ensures height matches with Join button
                   "&:hover": {
-                    borderColor: "#fff", // Keeps border color the same
-                    color: "#fff", // Keeps text color white on hover
+                    backgroundColor: "#E0761E",
                   },
+                  ml: 2,
+                  fontWeight: "bold",
+                  borderRadius: "8px",
+                  padding: "5px 20px",
+                  height: "50px", // Ensures height matches with Log In button
                 }}
               >
                 Log In
