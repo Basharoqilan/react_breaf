@@ -1,0 +1,41 @@
+/* Increase specificity */
+.modal-overlay {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    background-color: rgba(0, 0, 0, 0.5) !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+  }
+  
+  .modal-content {
+    background-color: white !important;
+    padding: 20px !important;
+    border-radius: 8px !important;
+    width: 500px !important;
+    max-width: 90% !important;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2) !important;
+    position: relative !important;
+    overflow-y: auto !important; /* Add scroll if content exceeds */
+    max-height: 90vh !important; /* Prevent overflowing */
+  }
+  
+  .close-modal {
+    position: absolute !important;
+    top: 10px !important;
+    right: 10px !important;
+    background: none !important;
+    border: none !important;
+    font-size: 20px !important;
+    cursor: pointer !important;
+  }
+  
+  .modal-content img {
+    width: 100% !important;
+    height: auto !important;
+    margin-bottom: 10px !important;
+  }
+  
