@@ -180,7 +180,7 @@ const Profile = () => {
     return (
         <>
         <Header />
-            <div className='content'>
+            <div className='content' style={{justifyContent: 'center' }}>
                 <div className="profile-container">
                     <div className="profile-header">
                         <h1 style={{ color: '#000', textTransform: 'capitalize' }}>{user.name}</h1>

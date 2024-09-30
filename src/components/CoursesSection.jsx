@@ -3,9 +3,23 @@ import { getDocs, collection } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { db } from "../firebase"; 
 import CourseDetails from "./CourseDetails"; // Import the CourseDetails component
-
+import SubscriptionModal from "./SubscriptionModal"; // Import SubscriptionModal
+import { getAuth, onAuthStateChanged } from "firebase/auth"; // Firebase auth import
+import { useContext } from "react";
+import { AuthContext } from "../utils/context/AuthContext";
 // Course Card Component
-const CourseCard = ({ imgSrc, course_name, teacher, price, duration, onDetailsClick }) => {
+const CourseCard = ({
+  imgSrc,
+  course_name,
+  teacher,
+  price,
+  duration,
+  onDetailsClick,
+  onSubscriptionClick,
+}) => {
+  const { currentUser, dispatch } = useContext(AuthContext);
+  const navigate = useNavigate();
+
   return (
     <div style={styles.card}>
       <div style={styles.imageContainer}>
@@ -17,14 +31,31 @@ const CourseCard = ({ imgSrc, course_name, teacher, price, duration, onDetailsCl
       </div>
 
       <div style={styles.cardContent}>
-        <h3 style={styles.courseName} >Course name: {course_name}</h3>
+        <h3 style={styles.courseName}>Course name: {course_name}</h3>
         <p style={styles.teacher}>Teacher: {teacher}</p>
         <p style={styles.duration}>Duration: {duration}</p>
         <h4 style={styles.price}>Cost: {price || 0} $</h4>
 
         <div style={styles.buttonContainer}>
-        <button className="course-button" onClick={onDetailsClick} style={{ marginRight : "5px" , marginTop : "15px", }}>Details</button>
-        <button className="course-button" style={{ marginTop : "15px" }}>Subscription</button>
+          <button
+            className="course-button"
+            onClick={onDetailsClick}
+            style={{ marginRight: "5px", marginTop: "15px" }}
+          >
+            Details
+          </button>
+          <button
+            className="course-button"
+            style={{ marginTop: "15px" }}
+            onClick={() => {
+              if (!currentUser) {
+                navigate("/login");
+              }
+              onSubscriptionClick();
+            }}
+          >
+            Subscription
+          </button>
         </div>
       </div>
     </div>
@@ -35,7 +66,10 @@ const CourseCard = ({ imgSrc, course_name, teacher, price, duration, onDetailsCl
 const CoursesSection = () => {
   const [courses, setCourses] = useState([]);
   const [selectedCourse, setSelectedCourse] = useState(null); // State to track the selected course
-  const navigate = useNavigate(); 
+  const [isSubscriptionModalOpen, setSubscriptionModalOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // Track login state
+  const [selectedUser, setSelectedUser] = useState(null); // Track the logged-in user
+  const navigate = useNavigate();
 
   // Fetch courses from Firestore
   useEffect(() => {
@@ -46,7 +80,8 @@ const CoursesSection = () => {
           const data = doc.data();
           return {
             id: doc.id,
-            course_image: data.course_image || "https://via.placeholder.com/300", // Match property names
+            course_image:
+              data.course_image || "https://via.placeholder.com/300", // Match property names
             course_name: data.course_name,
             course_teacher: data.course_teacher,
             total_cost: data.total_cost,
@@ -64,14 +99,36 @@ const CoursesSection = () => {
     fetchCourses();
   }, []);
 
-  // Function to handle the "Details" button click
-  const handleDetailsClick = (course) => {
-    setSelectedCourse(course); // Set the selected course to show in the modal
+  // Check if user is logged in
+  useEffect(() => {
+    const auth = getAuth();
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setIsLoggedIn(true); // Set login state to true if user is logged in
+        setSelectedUser(user); // Set the logged-in user
+      } else {
+        setIsLoggedIn(false); // User is not logged in
+      }
+    });
+  }, []);
+
+  // Handle the "Subscription" button click
+  const handleSubscriptionClick = (course) => {
+    if (isLoggedIn) {
+      setSelectedCourse(course); // Set the selected course to show in the modal
+      setSubscriptionModalOpen(true); // Open the subscription modal
+    } else {
+      // Redirect to login page if not logged in
+      navigate("/login", {
+        state: { message: "Please log in to subscribe to a course." },
+      });
+    }
   };
 
   // Function to close the modal
   const handleCloseModal = () => {
-    setSelectedCourse(null); // Reset selected course to hide the modal
+    setSubscriptionModalOpen(false); // Close the modal
+    setSelectedCourse(null); // Reset selected course
   };
 
   // Navigate to the courses page when "Show More" is clicked
@@ -96,7 +153,8 @@ const CoursesSection = () => {
                   teacher={course.course_teacher}
                   price={course.total_cost}
                   duration={course.course_duration}
-                  onDetailsClick={() => handleDetailsClick(course)} // Pass the course details to the modal
+                  onDetailsClick={() => setSelectedCourse(course)} // Pass the course details to the modal
+                  onSubscriptionClick={() => handleSubscriptionClick(course)} // Handle subscription click
                 />
               </div>
             ))
@@ -110,13 +168,23 @@ const CoursesSection = () => {
         </div>
 
         {/* Render CourseDetails modal if a course is selected */}
-        {selectedCourse && (
+        {selectedCourse && !isSubscriptionModalOpen && (
           <CourseDetails course={selectedCourse} onClose={handleCloseModal} />
+        )}
+
+        {/* Render SubscriptionModal only if the user is logged in and modal is open */}
+        {isSubscriptionModalOpen && selectedUser && (
+          <SubscriptionModal
+            course={selectedCourse}
+            user={selectedUser}
+            onClose={handleCloseModal}
+          />
         )}
       </div>
     </div>
   );
 };
+
 
 // Styling
 const styles = {

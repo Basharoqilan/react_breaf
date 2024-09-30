@@ -64,6 +64,7 @@ const Header = () => {
         background: "linear-gradient(180deg, #B06AB3 0%, #4568DC 100%)", // Gradient background
         boxShadow: "none",
         padding: "10px 0",
+        width: '100vw',
       }}
     >
       <Container>

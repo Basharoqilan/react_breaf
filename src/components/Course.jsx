@@ -6,8 +6,12 @@ import { collection, getDocs } from 'firebase/firestore';
 import { getAuth, onAuthStateChanged } from 'firebase/auth'; // Import Firebase Auth
 import CourseDetails from './CourseDetails'; 
 import SubscriptionModal from './SubscriptionModal'; 
-
+import { useContext } from "react";
+import { AuthContext } from "../utils/context/AuthContext";
 const CourseCard = ({ imgSrc, course_name, course_teacher, course_duration, cost, onDetailsClick, onSubscriptionClick }) => {
+    const navigate = useNavigate();
+    const { currentUser, dispatch } = useContext(AuthContext);
+
   return (
     <div className="course-card">
       <img className="course-image" src={imgSrc} alt={course_name} />
@@ -18,7 +22,10 @@ const CourseCard = ({ imgSrc, course_name, course_teacher, course_duration, cost
         <h4 className="course-cost" style={{ marginTop : "5px" }}>Cost: {cost} $</h4>
         <div className="button-group" style={{ marginTop : "10px" }}>
           <button className="course-button" onClick={onDetailsClick}>Details</button>
-          <button className="course-button" onClick={onSubscriptionClick}>Subscription</button>
+          <button className="course-button" onClick={() => {if (!currentUser) {
+                navigate("/login");
+              }
+              onSubscriptionClick();}}>Subscription</button>
         </div>
       </div>
     </div>

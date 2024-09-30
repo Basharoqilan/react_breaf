@@ -54,6 +54,7 @@ const Logout = ({ children }) => {
   color="primary"
   onClick={logout} // Log out the user
   sx={{
+    margin: '0 !important',
     backgroundColor: "#F68928", // Orange button
     color: "#fff",
     width : "50%",
